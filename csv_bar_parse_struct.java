@@ -90,6 +90,6 @@ public class csv_bar_parse_struct
   } // end Test with Vectors 
   public static void main(String[] args)
   {    
-    TestWithStruct("c:\\JOE\\stock\\JTDATA\\symbols\\SPY\\2012.M1.csv");
+    TestWithStruct("2014.M1.csv");
   }
 }

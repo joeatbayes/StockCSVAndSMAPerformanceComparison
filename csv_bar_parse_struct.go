@@ -112,6 +112,6 @@ func LoadBarsCSVFile(fname string) Bars {
 	return bars
 }
 func main() {
-	lb := LoadBarsCSVFile("c:/JOE/stock/JTDATA/symbols/SPY/2012.M1.csv")
+	lb := LoadBarsCSVFile("2014.M1.csv")
 	fmt.Printf("len(newBars)=%d\n", len(lb))
 }

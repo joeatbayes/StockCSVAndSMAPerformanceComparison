@@ -16,12 +16,13 @@ public long currms()
 }
 
  
+/* WARNING: NOT FINISHED */
 public static void main(String[] args)
 {
  
   try
   {
-  FileInputStream in = new FileInputStream("inputFile.txt");
+  FileInputStream in = new FileInputStream("2014.M1.csv");
   BufferedReader br = new BufferedReader(new InputStreamReader(in));
   String strLine;
   String[] splits = strIn.split("\n");
