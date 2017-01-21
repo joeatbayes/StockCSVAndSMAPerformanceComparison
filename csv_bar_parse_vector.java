@@ -84,6 +84,6 @@ public class csv_bar_parse_vector
   }
   public static void main(String[] args)
   {
-    TestWithVectors("c:\\JOE\\stock\\JTDATA\\symbols\\SPY\\2012.M1.csv");
+    TestWithVectors("2014.M1.csv");
   }
 }

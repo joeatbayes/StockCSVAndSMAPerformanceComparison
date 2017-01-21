@@ -61,4 +61,4 @@ function ParseData(err,data)
   console.log("calculated average open=" + tAvg);
   return StockData;
 }
-fs.readFile('c:/JOE/stock/JTDATA/symbols/SPY/2012.M1.csv', "ascii", ParseData);
+fs.readFile('2014.M1.csv', "ascii", ParseData);

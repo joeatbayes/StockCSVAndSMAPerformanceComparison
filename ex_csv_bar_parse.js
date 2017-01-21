@@ -149,7 +149,7 @@ function ParseData(err,data)
 
 start = Elapsed();  // start the clock after all the libraries are loaded and parsed
 
-fs.readFile('c:/JOE/stock/JTDATA/symbols/SPY/2012.M1.csv', "ascii", ParseData);
+fs.readFile('2014.M1.csv', "ascii", ParseData);
 
 start = Elapsed();  // start the clock after all the libraries are loaded and parsed
 //fs.readFile('c:/JOE/stock/JTDATA/symbols/SPY/2012.M1.csv', "ascii", ParseDataPreAlloc);
