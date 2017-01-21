@@ -4,17 +4,37 @@ License:  MIT
 Author: Joseph Ellsworth
 Version 1.0
 
+When developing a system for machine learning I found that if we measured the speed a language could parse relatively large CSV files and then compute a SMA was a reasonably good indicator of how a language / runtime would perform in our larger project to predict stock price movements.      In my linked-in article   [c++ faster than C# depends on the coding idiom](https://www.linkedin.com/pulse/c-faster-than-depends-coding-idom-joe-ellsworth) Several people requested links to the source code.   This repository 
+
+### Single Performance Factor###
+
+The files here represent source code I wrote to test various approaches in the different languages.  The  single largest difference in peformance was generally delivered by using tricks to minimize the number of small memory allocations but this does not improve the performance under node.js or Python due to the way they manage memory and compute locations for array elements.   
+
+I did not try using the NumPy arrays in python that could emulate the FFI arrays I used in Lua but there is a chance that Python with PyPy could improve in relative performance if this was implemented. 
+
+#### Summary Analysis 
+
+The C code and the Go code really where not much different  with the only real difference that the C code had to manually free of the arrays when no longer used while the GO code does that part automatic.     The interesting thing about the trading / prediction engine is that they don't really seem to generate a lot of garbage we need to automatically clean.  In fact most of the memory is consumed in long lived data structures that should be incrementally updated.    We also want control over what is cleaned up and when it will be cleaned for performance reasons.
+
+I am still surprised how well the GO code performed in comparison to well written C code   This may indicate the GO code which may indicate that the GO code is doing less work but could not see where in a quick audit of the code.  
+
+On the surface I have to say the pypy approach is attractive since it was only 37% the code of the of C or GO Ultimately it seems like I am generally managing our own data struture and memory management anyway for performance reasons such as creating large vectors with enough extra space to allow new bars to be added without reallocating and that in doing so I am fighting the runtime enviornment garbage collectors.  They techniques can improve the dynamic enviornments but if you are really wanting that level of control why fight them.  The main issue is prevalence in C++ of data structures that are fine grained memory allocators which can make things slower than desired or cause undesirable pauses.  As such why not just pay the price and write the code in C where I have the control in the first place.   It used to be that the C compilers where slow enough that build time was a problem but they seem nearly instant even with the optimizer enabled now days.
+
+## Comparative Results
+
+Please note these tests were generated with a much larger file.    You will need to enlarge the supplied CSV file by about 100X to get similar results.  
+
+Lua                -   48.8  sec -  medium  Load / medium compute
+Python             -  609.4  sec - Fast Load / slower compute
+gcc bulk           -  19.13  sec - Faster  Load / Fast compute
+gcc lines          -  21.112 sec - fastest lost /fastest compute
+cl                 -  17.60  sec - fastest load / fastest compute
+pypy               -  25.34  sec - Fast Load / Fast compute
+GO1.4.2            - 21.915  seconds - Fastest / Fast
+gcc 64 bit lines   - 13.483s
+gcc 64 bit bulk    - 21.873s
 
 
-When developing a system for machine learning I found that if we measured the speed a language could parse relatively large CSV files and then compute a SMA was a reasonably good indicator of how a language / runtime would perform in our larger project to predict stock price movements.
-
-
-
-> > 
-
-### Single Largest Factor###
-
-The files here represent source code I wrote to test various approaches in the different languages.  The  single largest difference in peformance was generally delivered by using tricks to minimize the number of small memory allocations but this does not improve the performance under node.js or Python due to the way they manage memory and compute locations for array elements. 
 
 
 
@@ -141,26 +161,9 @@ On the surface PyPy may appear to the be best solution.  It offers a 50% code re
 
 #### Using FFI with Lua to support larger files
 
+> > See Article [LuaJIT Access 20 Gig or More of Memory](http://bayesanalytic.com/access-extra-memory-from-lua-jit/)
+
 It would be possible to use the FFI to build a library to do the loading of the CSV files for Lua but the Luajit community seems risky with one guy who is rather caustic as the primary engineer and we have hit enough failure scenarios that it seems more rational to just use the native C and consider Lua again if we want to add scripting but since  we are dealing with memory models large enough be a issue for luajit  every time we turn around the poor GC will be an issue.	 By the time we pay the overhead of C memory managment sometimes and not others it the code volume was only a little smaller and lack of true objects that support queues, lists and others make it more difficult.  In addition lua is inherantly not good at multi-tasking.
 
-The C code and the Go code really where not much different  with the only real difference that the C code had to manually free of the arrays when no longer used while the GO code does that part automatic.     The interesting thing about the trading / prediction engine is that they don't really seem to generate a lot of garbage we need to automatically clean.  In fact most of the memory is consumed in long lived data structures that should be incrementally improved.    We also want control over what is cleaned up and when it will be cleaned for performance reasons.
-
-I still don't understand how the	GO code could so close to well written C in the full C compiler options are turned on.    This may indicate the GO code which may indicate that the GO code is doing less work but could not see where in a quick audit of hte code.  At the surface I have to say the pypy approach is attractive since it was only 37% the code of the of C or GO Ultimately it seems like I am generally managing our own data struture and memory mangement anyway for performance reasons such as creating large vectors with enough extra space to allow new bars to be added without reallocating and that in doing so I am fighting the runtime enviornment garbage collectors.  They techniques can improve the dynamic enviornments but if you are really wanting that level of control why fight them.  The main issue is prevalence in C++ of data structures that are fine grained memory allocators which can make things slower than desired or cause undesirable pauses.  As such why not just pay the price and write the code in C where I have the control in the first place.   It used to be that the C compilers where slow enough that build time was a problem but they seem nearly instant even with the optimizer enabled now days.
-
-## Comparative Results##
-
-Please note these tests were generated with a much larger file.    You will need to enlarge the supplied CSV file by about 100X to get similar results.  
-
-
-Lua                -   48.8  sec -  medium  Load / medium compute
-Python             -  609.4  sec - Fast Load / slower compute
-gcc bulk           -  19.13  sec - Faster  Load / Fast compute
-gcc lines          -  21.112 sec - fastest lost /fastest compute
-cl                 -  17.60  sec - fastest load / fastest compute
-pypy               -  25.34  sec - Fast Load / Fast compute
-GO1.4.2            - 21.915  seconds - Fastest / Fast
-gcc 64 bit lines   - 13.483s
-gcc 64 bit bulk    - 21.873s
-
-
+> > > Updated: Jan-2017  I chose to implement a lot of code in LuaJit but found a number of edge cases where it was not quite reliable.    About 4 months after I started that work the primary author of LuaJit dropped out  and it was unclear what the long term life would be because some features had diverged quite dramatically from the mainstream lua community.    I started porting it all to ANSII C which went amazingly easy and then had to take a contract and was diverted fro the next couple years.   I recently released a new open source [Quantized Machine learning classifier written in GO](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition)  based on what I learned after having thought about what I learned from observing the Lua version operating in with real life stock data in near real time.     I probably would have chosen to implement it in Rust but I wanted to surface the engine as a HTTP service and GO has a particularly strong HTTP/HTTPS server built in while RUST has several none of which seem as clean as the GO version.
 
