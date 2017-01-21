@@ -80,6 +80,6 @@ function ParseData(data)
   return StockData;
 }
 
-fileContents = fs.readFileSync('2011.M10.csv', "ascii");
+fileContents = fs.readFileSync('2014.M1.csv', "ascii");
 ParseData(fileContents);
 

@@ -170,8 +170,8 @@ public class ex_read_all_lines
   
   public static void main(String[] args)
   {
-    //TestWithVectors("c:\\JOE\\stock\\JTDATA\\symbols\\SPY\\2012.M1.csv");
-    TestWithStruct("c:\\JOE\\stock\\JTDATA\\symbols\\SPY\\2012.M1.csv");
+    //TestWithVectors("2014.M1.csv");
+    TestWithStruct("2014.M1.csv");
   }
   
   

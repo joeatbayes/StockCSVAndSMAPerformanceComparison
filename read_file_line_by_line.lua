@@ -88,7 +88,7 @@ function dorun(fname)
 end
 
 beg_time = os.clock()
-local trecs = dorun("c:\\calgo-data\\exp-EURUSD-Tick-rsi14-stddev100-bars.csv")
+local trecs = dorun("2014.M1.csv")
 end_time = os.clock()
 elap = end_time - beg_time
 print("elap sec time=" .. elap .. "numRec=" .. trecs.size )

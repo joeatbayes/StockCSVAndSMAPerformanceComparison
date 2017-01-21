@@ -35,7 +35,7 @@ void main(string[] args) {
   FILE *ptr_file;
   char buf[1000];
   char bbuf[50003];
-  ptr_file =fopen("c:/JOE/stock/JTDATA/symbols/SPY/2012.M1.csv","r");
+  ptr_file =fopen("2014.M1.csv","r");
   if (!ptr_file)
      return;  
   double startCount = nowms(); 

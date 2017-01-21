@@ -19,8 +19,8 @@ function curr_ms()
 
 var beg_time = curr_ms();
 print_memory_usage();
-//var file_name = "AS400_DAtabases_sample_records.txt";
-var file_name = "AS400_Databases_2.txt";
+
+var file_name = "2014.M1.csv";
 var flags = {flags: 'r',  encoding: 'utf-8',  fd: null,  mode: 0666, bufferSize: 64 * 1024 }
 var tstream = fs.createReadStream(file_name, flags);
 var head_arr = null;

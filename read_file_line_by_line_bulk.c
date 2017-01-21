@@ -121,7 +121,7 @@ double *TestLoadBulk(char *fiName,  long *numRec) {
 
 int main() {
 	 long numRec;
-	 char *fname = "c:/calgo-data/exp-EURUSD-Tick-rsi14-stddev100-bars.csv";
+	 char *fname = "2014.M1.csv";
   printf("CLOCKS_PER_MS=%lf  CLOCKS_PER_SEC=%lf\n", (double) CLOCKS_PER_MS, (double) CLOCKS_PER_SEC);
 
   double*tarr = TestLoadBulk(fname, &numRec);

@@ -33,5 +33,5 @@ let load_barsX2(fiName : string) =
   let avgb1 = nowms()
   let avg1 = cavg(tout)
   elap("Calc average from struct", avgb1)
-let fiName = "c:/JOE/stock/JTDATA/symbols/SPY/2012.M1.csv"
+let fiName = "2014.M1.csv"
 let tout = load_barsX2(fiName)

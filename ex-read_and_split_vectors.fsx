@@ -51,5 +51,5 @@ let load_bars_vectors(fiName : string) =
   let closeAvg = Array.average vclose
   elap("Calc Average = " + string(closeAvg) + " from Array vector", begAvg)
   (vdtime, vday, vopen, vclose, vhigh, vlow, vvol)
-let fiName = "c:/JOE/stock/JTDATA/symbols/SPY/2012.M1.csv"
+let fiName = "2014.M1.csv"
 let aRes = load_bars_vectors(fiName)

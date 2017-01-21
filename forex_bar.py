@@ -36,7 +36,7 @@ class forexBars:
 
 
 startms = curr_ms()
-f = open("c:\\calgo-data\\exp-EURUSD-Tick-rsi14-stddev100-bars.csv")
+f = open("2014.M1.csv")
 #a = f.readlines()
 #endreadms = curr_ms()
 #elap("finished read lines", startms, endreadms)
