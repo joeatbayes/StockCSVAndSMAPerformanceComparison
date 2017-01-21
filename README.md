@@ -20,9 +20,11 @@ I am still surprised how well the GO code performed in comparison to well writte
 
 On the surface I have to say the pypy approach is attractive since it was only 37% the code of the of C or GO Ultimately it seems like I am generally managing our own data struture and memory management anyway for performance reasons such as creating large vectors with enough extra space to allow new bars to be added without reallocating and that in doing so I am fighting the runtime enviornment garbage collectors.  They techniques can improve the dynamic enviornments but if you are really wanting that level of control why fight them.  The main issue is prevalence in C++ of data structures that are fine grained memory allocators which can make things slower than desired or cause undesirable pauses.  As such why not just pay the price and write the code in C where I have the control in the first place.   It used to be that the C compilers where slow enough that build time was a problem but they seem nearly instant even with the optimizer enabled now days.
 
-## Comparative Results
+## Comparative Results May-01-2015
 
-Please note these tests were generated with a much larger file.    You will need to enlarge the supplied CSV file by about 100X to get similar results.  
+Please note these tests were generated with a much larger file.    You will need to enlarge the supplied CSV file by about 100X to get similar results.     There are newer results covering more languages in the file [bar-parsing-performance-languages-compared.docx](bar-parsing-performance-languages-compared.docx)
+
+![Performance Test By Language](performance_test_results.jpg)
 
 Lua                -   48.8  sec -  medium  Load / medium compute
 Python             -  609.4  sec - Fast Load / slower compute
@@ -34,7 +36,42 @@ GO1.4.2            - 21.915  seconds - Fastest / Fast
 gcc 64 bit lines   - 13.483s
 gcc 64 bit bulk    - 21.873s
 
+TODO: Add Node.js, NIM, D, Python 3.5 with NumPY Array
 
+## Analysis
+
+NOTE: One of the more surprising findings was that fully optimized gcc  64 bit compiled code slightly out performed microsoft CL 64 bit fully
+
+ optimized compiled code.  I expect the oposite.  I was also quite surprised  at how much GO has improved so it is only 1.073 times slower than the best C code.   I was also plesantly surprised to find python written for pypy to only be 1.508 times slower than the well written C code.
+
+#### Lua and Lua Jit
+
+The lua version quite surprisingly was among the slowest of the set when using internal Lua tables taking over 8 minutes to run the complete set of load and average  once we changed it to use a pre-allocated FFI array it dropped to a total of 48 seconds even with a 6 second penalty to read through the array the first time to count lines.    This sample file is 800 meg with 7,619,218   The fastest C was only 14.426 seconds and the fastest GO was 15.5 seconds.  Even when using FFI the luajit was slower than GO, C and pypy and was only faster than Nim or cpython.
+
+#### NIM
+
+The Nim code was affected by the poor nim garbage collector so tight loops
+ended up creating too much garbage. It was amonth the the slowest for loading
+the data and no option tired seemed to help.  There were soem things like
+analgous to pointers that could make Nim greate for functional proramming but
+horrible for high performance code that can not afford to pass by reference.
+
+#### Code Size Comparison
+
+The GO code was	126 lines.   The python 52 lines,  The lua with the FII was 101 lines
+and the C was 110 lines.   Of these the Luajit was the largest struggle. to get  working fast but I didn't try with the python sma functions in cPython.  The python without pypy over consumed over  600 seconds almost almost all the time for cpython was of it was in the sma calulations which is unfortunate since the python was among the fastest load time for both cpython and pypy.
+
+#### Python with PyPy compiler 32 bit
+
+On the surface PyPy may appear to the be best solution.  It offers a 50% code reduction compared to C and performed only 1.5 times slower.  In addtion there are pre-built bindings for scikit learn and numpy (not tested with pypy) that provide a lot of code for statsitical functions I would otherwise have to write and the scikit and numpy matrix functions seem to have a strong performance  repuations.  	The main concern with pypy is only available built for 32 bit on windows and I suspect that more complex structures will struggle with lots of oportunity for degradation.	  This will be the 4th language rewrite trying  to get some consiseness and library advantages from the language but in every case we end up bumping heads against the enviornment lmits to the point where we have to consider a re-write.   Pypy could easily reproduce this issue but if it worked it could be a great solution.
+
+#### Using FFI with Lua to support larger files
+
+> > See Article [LuaJIT Access 20 Gig or More of Memory](http://bayesanalytic.com/access-extra-memory-from-lua-jit/)
+
+It would be possible to use the FFI to build a library to do the loading of the CSV files for Lua but the Luajit community seems risky with one guy who is rather caustic as the primary engineer and we have hit enough failure scenarios that it seems more rational to just use the native C and consider Lua again if we want to add scripting but since  we are dealing with memory models large enough be a issue for luajit  every time we turn around the poor GC will be an issue.	 By the time we pay the overhead of C memory managment sometimes and not others it the code volume was only a little smaller and lack of true objects that support queues, lists and others make it more difficult.  In addition lua is inherantly not good at multi-tasking.
+
+> > > Updated: Jan-2017  I chose to implement a lot of code in LuaJit but found a number of edge cases where it was not quite reliable.    About 4 months after I started that work the primary author of LuaJit dropped out  and it was unclear what the long term life would be because some features had diverged quite dramatically from the mainstream lua community.    I started porting it all to ANSII C which went amazingly easy and then had to take a contract and was diverted fro the next couple years.   I recently released a new open source [Quantized Machine learning classifier written in GO](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition)  based on what I learned after having thought about what I learned from observing the Lua version operating in with real life stock data in near real time.     I probably would have chosen to implement it in Rust but I wanted to surface the engine as a HTTP service and GO has a particularly strong HTTP/HTTPS server built in while RUST has several none of which seem as clean as the GO version.
 
 
 
@@ -130,40 +167,4 @@ average of sma=   1.3152
 real    0m15.474s
 user    0m0.000s
 sys     0m0.015s
-
-## Analysis
-
-
-NOTE: One of the more surprising findings was that fully optimized gcc  64 bit compiled code slightly out performed microsoft CL 64 bit fully
-
- optimized compiled code.  I expect the oposite.  I was also quite surprised  at how much GO has improved so it is only 1.073 times slower than the best C code.   I was also plesantly surprised to find python written for pypy to only be 1.508 times slower than the well written C code.
-
-#### Lua and Lua Jit
-
-The lua version quite surprisingly was among the slowest of the set when using internal Lua tables taking over 8 minutes to run the complete set of load and average  once we changed it to use a pre-allocated FFI array it dropped to a total of 48 seconds even with a 6 second penalty to read through the array the first time to count lines.    This sample file is 800 meg with 7,619,218   The fastest C was only 14.426 seconds and the fastest GO was 15.5 seconds.  Even when using FFI the luajit was slower than GO, C and pypy and was only faster than Nim or cpython.
-
-#### NIM
-
-The Nim code was affected by the poor nim garbage collector so tight loops
-ended up creating too much garbage. It was amonth the the slowest for loading
-the data and no option tired seemed to help.  There were soem things like
-analgous to pointers that could make Nim greate for functional proramming but
-horrible for high performance code that can not afford to pass by reference.
-
-#### Code Size Comparison
-
-The GO code was	126 lines.   The python 52 lines,  The lua with the FII was 101 lines
-and the C was 110 lines.   Of these the Luajit was the largest struggle. to get  working fast but I didn't try with the python sma functions in cPython.  The python without pypy over consumed over  600 seconds almost almost all the time for cpython was of it was in the sma calulations which is unfortunate since the python was among the fastest load time for both cpython and pypy.
-
-#### Python with PyPy compiler 32 bit
-
-On the surface PyPy may appear to the be best solution.  It offers a 50% code reduction compared to C and performed only 1.5 times slower.  In addtion there are pre-built bindings for scikit learn and numpy (not tested with pypy) that provide a lot of code for statsitical functions I would otherwise have to write and the scikit and numpy matrix functions seem to have a strong performance  repuations.  	The main concern with pypy is only available built for 32 bit on windows and I suspect that more complex structures will struggle with lots of oportunity for degradation.	  This will be the 4th language rewrite trying  to get some consiseness and library advantages from the language but in every case we end up bumping heads against the enviornment lmits to the point where we have to consider a re-write.   Pypy could easily reproduce this issue but if it worked it could be a great solution.
-
-#### Using FFI with Lua to support larger files
-
-> > See Article [LuaJIT Access 20 Gig or More of Memory](http://bayesanalytic.com/access-extra-memory-from-lua-jit/)
-
-It would be possible to use the FFI to build a library to do the loading of the CSV files for Lua but the Luajit community seems risky with one guy who is rather caustic as the primary engineer and we have hit enough failure scenarios that it seems more rational to just use the native C and consider Lua again if we want to add scripting but since  we are dealing with memory models large enough be a issue for luajit  every time we turn around the poor GC will be an issue.	 By the time we pay the overhead of C memory managment sometimes and not others it the code volume was only a little smaller and lack of true objects that support queues, lists and others make it more difficult.  In addition lua is inherantly not good at multi-tasking.
-
-> > > Updated: Jan-2017  I chose to implement a lot of code in LuaJit but found a number of edge cases where it was not quite reliable.    About 4 months after I started that work the primary author of LuaJit dropped out  and it was unclear what the long term life would be because some features had diverged quite dramatically from the mainstream lua community.    I started porting it all to ANSII C which went amazingly easy and then had to take a contract and was diverted fro the next couple years.   I recently released a new open source [Quantized Machine learning classifier written in GO](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition)  based on what I learned after having thought about what I learned from observing the Lua version operating in with real life stock data in near real time.     I probably would have chosen to implement it in Rust but I wanted to surface the engine as a HTTP service and GO has a particularly strong HTTP/HTTPS server built in while RUST has several none of which seem as clean as the GO version.
 
