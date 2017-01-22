@@ -4,7 +4,7 @@ License:  MIT
 Author: Joseph Ellsworth
 Version 1.0
 
-When developing a system for machine learning I found that if we measured the speed a language could parse relatively large CSV files and then compute a SMA was a reasonably good indicator of how a language / runtime would perform in our larger project to predict stock price movements.      In my linked-in article   [c++ faster than C# depends on the coding idiom](https://www.linkedin.com/pulse/c-faster-than-depends-coding-idom-joe-ellsworth) Several people requested links to the source code.   This repository 
+When developing a system for machine learning I found the a speed a language could parse relatively large CSV files and compute a SMA was a reasonably good indicator of how that language / runtime would perform in our larger machine learning project to predict stock price movements.      In my linked-in article   [c++ faster than C# depends on the coding idiom](https://www.linkedin.com/pulse/c-faster-than-depends-coding-idom-joe-ellsworth) Several people requested links to the source code.   This repository was created to provide access to the source.
 
 ### Single Performance Factor###
 
