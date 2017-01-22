@@ -4,15 +4,15 @@ License:  MIT
 Author: Joseph Ellsworth
 Version 1.0
 
-When developing a system for machine learning I found the a speed a language could parse relatively large CSV files and compute a SMA was a reasonably good indicator of how that language / runtime would perform in our larger machine learning project to predict stock price movements.      In my linked-in article   [c++ faster than C# depends on the coding idiom](https://www.linkedin.com/pulse/c-faster-than-depends-coding-idom-joe-ellsworth) Several people requested links to the source code.   This repository was created to provide access to the source.
+When developing a system for machine learning I found the a speed a language / runtime could parse relatively large CSV files and compute a SMA was a reasonably good indicator of how that language / runtime would perform in our larger machine learning project to predict stock price movements.      In my linked-in article   [c++ faster than C# depends on the coding idiom](https://www.linkedin.com/pulse/c-faster-than-depends-coding-idom-joe-ellsworth) Several people requested links to the source code.   This repository was created to provide access to the source.
 
-### Single Performance Factor###
+## Single largest performance factor##
 
 The files here represent source code I wrote to test various approaches in the different languages.  The  single largest difference in performance was generally delivered by using tricks to minimize the number of small memory allocations but this does not improve the performance under node.js or Python due to the way they manage memory and compute locations for array elements.   
 
 I did not try using the NumPy arrays in python that could emulate the FFI arrays I used in Lua but there is a chance that Python with PyPy could improve in relative performance if this was implemented. 
 
-#### Summary Analysis 
+## Analysis Summary  
 
 The C code and the Go code really where not much different  with the only real difference that the C code had to manually free of the arrays when no longer used while the GO code does that part automatic.     The interesting thing about the trading / prediction engine is that they don't really seem to generate a lot of garbage we need to automatically clean.  In fact most of the memory is consumed in long lived data structures that should be incrementally updated.    We also want control over what is cleaned up and when it will be cleaned for performance reasons.
 
@@ -168,3 +168,26 @@ real    0m15.474s
 user    0m0.000s
 sys     0m0.015s
 
+
+
+
+
+## Some of my Other Projects
+
+
+
+> - **[Quantized Classifier](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition)** A Machine Learning classifier using novel techniques that delivers precision at 100% recall comparable to with Deep Learning CNN for many classification tasks while running many times faster.  If is written in GO  and available on a MIT license. 
+> - [**Solve Water Scarcity Using DEM**](http://AirSolarWater.com/dem)  A Novel way of using micro reservoirs to reduce the impact of water scarcity. Ideal for adoption on poor countries especially in the very poor rural agricultural regions.   It is based on the premis of building very small micro capture dams using stones and dam.   The DEM (Digital Elevation Model) work models water flow so we can show people where to build these small reservoirs so each reservoir will refill with 1,000's of gallons of water everytime there is more than 0.3 inches of runoff.  Water soaks in to nurture food producing trees while also refilling local aquifer.
+> - **[Bayesanlytic.com Articles About Machine Learning](http://bayesanalytic.com/main/technical-engineering/machine-learning/)**  - Many articles including conceptual approach to building KNN engines.     A description of our  predictive Analytic engine using AI techniques with high volume, high speed and big data capability.  Designed to predict stock price moves using technical data.  
+>
+>
+> - [The **Air Solar Water product line A2WH**](http://airsolarwater.com/)  is a fully renewable extraction of water from air.  Provides systems which extract liquid potable water from air using solar energy.   This technology  can deliver water cost effectively in the most hostile locations and can scale from 1 gallon per day up through millions of gallons per day. A2WH patented technology provides world leading ability to extract water from air using only renewable energy. 
+> - [**FastQueueFS**](https://github.com/joeatbayes/fastQueueFS) Fast Queue with many reader capacity using HTTP Protocol and REST API. Similar to Kafka but faster and with more flexible topics and queue configuration. Written in FSharp automatically handles multiple topics. Very high performance, Low Latency with N-Tier data propagation
+> - [**CNCUtil**](https://bitbucket.org/joexdobs/cncutil)  Ruby Code to Generate optimized GCODE using high level scripting commands.
+>
+>
+> - [**Correct Energy Solutions**](http://correctenergysolutions.com/) -  provides  unique energy solutions designed solve real world energy and conservation problems.  This includes [micro-wind turbines](http://correctenergysolutions.com/wind) suitable for near ground installation,  renewable cooling and air to water technologies.  
+> - [**CSVTablesInBrowser**](https://github.com/joeatbayes/CSVTablesInBrowser)  Render CSV files on the server in nice tables fetched using AJAX. Very easy to use with repeated headers, value override via callbacks.
+>
+>
+> -  My personal site [**JoeEllsworth.com**](http://joeellsworth.com/) which contains my [resume](http://joeellsworth.com/resume/2013-v04-joe-bio-dir-cto-architect.pdf)
