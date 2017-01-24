@@ -1,0 +1,84 @@
+Jan-20-2017
+Realized that readline was not really reading line 
+by line so fixed it.  In this version of GO the 
+buffered readln does not seem to incur much of 
+a penalty unlike our earlier tests where it 
+was much slower or better said it does incur 
+a penalty but the penalty does not seem to 
+be much worse than the cost of the string 
+split.  A better approach would be to use
+a tokeninzing approach so GO isn't forced 
+to allocate as much memory for the array 
+of strings.  I doubt it would save more than
+20ms total so probably not worth it unless 
+that area becomes a critical performance
+blocker.
+
+Ieterating over the vector of numbers is still much 
+faster than ieterating over a structure with a field 
+that contains a number.  I think this is just the 
+extra time to allow for one more pointer lookup.  The 
+average with structurs seems to be about 10X slower 
+than the average over simple float array.  
+
+When looking at this code I realized it is computing a simple 
+average rather than a SMA.  If the other language samples 
+actually are producing a SMA then it is not a fair comparison. 
+
+Based on this result all file loads can be done line by line 
+with structures constructed as the lines are needed and 
+adding them to an the array using the slice append.    
+It may be worth testing allocating an array of Bar rather 
+than an array of *bar then just changing the values as 
+they are read to see if it reduces the cost of them 
+memory allocations enough to be worth while. 
+
+C:\joe\git\SMAPerfTest>c:\cygwin64\bin\time read_file_line_by_line_go
+
+fiName=2014.M1.csv
+ELAP Open File  =        0.000 ms
+ELAP Allocate Bars =        0.000 ms
+ELAP Make Records  =      121.661 ms
+ELAP total File Load  =      126.678 ms
+ELAP Calculate Avg()  =        0.500 ms
+Avg =    192.37
+Avg =    192.37
+Run 100 avg() =44.09  each=0.441
+len(newBars)=86364
+0.00user 0.00system 0:00.22elapsed 0%CPU (0avgtext+0avgdata 228096maxresident)k
+0inputs+0outputs (939major+0minor)pagefaults 0swaps
+
+
+
+C:\joe\git\SMAPerfTest>c:\cygwin64\bin\time csv_bar_parse_vector
+fiName=2014.M1.csv
+ELAP File Read  =        9.491 ms
+ELAP Convert string to bytes  =        4.512 ms
+ELAP Split String to rows  =       22.572 ms
+ELAP Allocate Vectors =        4.010 ms
+ELAP Make Records  =      106.281 ms
+ELAP total File Load  =      151.375 ms
+ELAP Calculate Avg()  =        0.000 ms
+Avg =    192.36
+Run 100 avg() =13.60  each=0.136
+0.00user 0.01system 0:00.22elapsed 6%CPU (0avgtext+0avgdata 227840maxresident)k
+0inputs+0outputs (938major+0minor)pagefaults 0swaps
+
+
+
+C:\joe\git\SMAPerfTest>c:\cygwin64\bin\time csv_bar_parse_struct.exe
+
+fiName=2014.M1.csv
+ELAP File Read  =        6.038 ms
+ELAP Convert string to bytes  =        3.479 ms
+ELAP Split String to rows  =       23.072 ms
+ELAP Allocate Bars =        0.000 ms
+ELAP Make Records  =      106.924 ms
+ELAP total File Load  =      144.008 ms
+ELAP Calculate Avg()  =        0.475 ms
+Avg =    192.37
+Avg =    192.37
+Run 100 avg() =46.67  each=0.467
+len(newBars)=86364
+0.00user 0.01system 0:00.25elapsed 5%CPU (0avgtext+0avgdata 228096maxresident)k
+0inputs+0outputs (939major+0minor)pagefaults 0swaps

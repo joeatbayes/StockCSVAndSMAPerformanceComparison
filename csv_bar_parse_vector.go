@@ -107,5 +107,5 @@ func LoadBarsCSVFile(fname string) {
 	fmt.Printf("Run 100 avg() =%5.2f  each=%5.3f\n", elapa100, (elapa100 / 100.0))
 }
 func main() {
-	LoadBarsCSVFile("c:/JOE/stock/JTDATA/symbols/SPY/2012.M1.csv")
+	LoadBarsCSVFile("2014.M1.csv")
 }
